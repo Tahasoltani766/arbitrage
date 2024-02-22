@@ -55,6 +55,9 @@ async def get_trx_by_hash(new_pending_queue, tx_data_queue):
 def printer(tx_data_queue):
     while True:
         data = tx_data_queue.get()
+        # Here you have to make some changes
+        # Here, the transactions that are returned should be sent to the file:
+        # (last_block_tx_simulatore) so that the continuation of the work can be followed there
         pprint(data)
 
 

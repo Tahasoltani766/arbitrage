@@ -8,6 +8,7 @@ from src.last_block_tx_simulatore.constant import *
 from src.last_block_tx_simulatore.filter_address_pool import get_data
 from hexbytes import HexBytes
 
+
 class HexJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, HexBytes):
@@ -29,32 +30,30 @@ def get_hash_txs(w3=web3_instance()):
     return tx_hash_list
 
 
-
 @cache
 def get_tx_data(tx_hash, w3=web3_instance()):
     trx = w3.eth.get_transaction(tx_hash)
     inp = trx['input']
-    resp_post_rust(trx)
     if inp != zero_input_tx:
-        tx = [trx['blockNumber'], trx['from'], trx['gas'], trx['hash'], trx['input'], trx['to'],
-              trx['value']]
+        resp_post_rust(trx)
 
-def get_tx_attr(tx, key):
-    if key == "blockNumber":
-        return tx[0]
-    elif key == "from":
-        return tx[1]
-    elif key == "gas":
-        return tx[2]
-    elif key == "hash":
-        return tx[3]
-    elif key == "input":
-        return tx[4]
-    elif key == "to":
-        return tx[5]
-    elif key == "value":
-        return tx[6]
-    return None
+
+# def get_tx_attr(tx, key):
+#     if key == "blockNumber":
+#         return tx[0]
+#     elif key == "from":
+#         return tx[1]
+#     elif key == "gas":
+#         return tx[2]
+#     elif key == "hash":
+#         return tx[3]
+#     elif key == "input":
+#         return tx[4]
+#     elif key == "to":
+#         return tx[5]
+#     elif key == "value":
+#         return tx[6]
+#     return None
 
 
 def resp_post_rust(trx):
@@ -74,7 +73,7 @@ def resp_post_rust(trx):
 
 
 def filter_transaction(transaction, _hash):
-    address_dexs = [swap_router01,uniswap_router2, zerox, oneinch, sushiswap, universal_router, swap_router02]
+    address_dexs = [swap_router01, uniswap_router2, zerox, oneinch, sushiswap, universal_router, swap_router02]
     cleaned_formatrace = re.sub(combined_regex, '', transaction['formattedTrace'])
     n = True
     list_data = []
