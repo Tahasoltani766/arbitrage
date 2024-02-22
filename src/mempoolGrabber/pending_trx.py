@@ -1,15 +1,11 @@
 import random
 from pprint import pprint
-
 from web3.exceptions import TransactionNotFound
 from multiprocessing import Queue, Process
 from src.mempoolGrabber.web3_instances import node_getblock
 import time
 import asyncio
-import json
-import requests
-from websockets import connect
-from web3 import AsyncWeb3, AsyncHTTPProvider, WebsocketProviderV2
+from web3 import AsyncWeb3, WebsocketProviderV2
 from threading import Thread
 
 

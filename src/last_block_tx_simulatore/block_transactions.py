@@ -8,7 +8,6 @@ from src.last_block_tx_simulatore.constant import *
 from src.last_block_tx_simulatore.filter_address_pool import get_data
 from hexbytes import HexBytes
 
-
 class HexJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, HexBytes):
@@ -19,7 +18,6 @@ class HexJsonEncoder(json.JSONEncoder):
 zero_input_tx = HexBytes('0x')
 
 
-# @web3_wrapper
 def get_hash_txs(w3=web3_instance()):
     tx_hash_list = []
     if w3.is_connected():
@@ -31,19 +29,15 @@ def get_hash_txs(w3=web3_instance()):
     return tx_hash_list
 
 
-# @web3_wrapper
+
 @cache
 def get_tx_data(tx_hash, w3=web3_instance()):
-    # print(tx_hash.hex())
     trx = w3.eth.get_transaction(tx_hash)
     inp = trx['input']
     resp_post_rust(trx)
     if inp != zero_input_tx:
-
         tx = [trx['blockNumber'], trx['from'], trx['gas'], trx['hash'], trx['input'], trx['to'],
               trx['value']]
-
-
 
 def get_tx_attr(tx, key):
     if key == "blockNumber":
