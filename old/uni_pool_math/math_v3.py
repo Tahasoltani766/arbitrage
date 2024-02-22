@@ -1,8 +1,8 @@
 import math
-from mongo_handler import get_data_pool_mongo, pool_coloction
-from uni_pool_math.math_v2 import math_delta_y, math_delta_x
-from web3_instances import w3
-from web3_instances import abi_pool_v3
+from old.mongo_handler import get_data_pool_mongo, pool_coloction
+from old.uni_pool_math.math_v2 import math_delta_y, math_delta_x
+from old.web3_instances import w3
+from old.web3_instances import abi_pool_v3
 
 min_tick = -887272
 max_tick = 887272

@@ -1,15 +1,15 @@
 import re
 from functools import cache
-
+from src.last_block_tx_simulatore.mongo_handler import blockchain_db as db
 from eth_typing import ChecksumAddress
 from web3 import Web3
-from src.transactions.uni_pool_math.math_v2 import math_delta_y, math_delta_x
+from src.last_block_tx_simulatore.uni_pool_math.math_v2 import math_delta_y, math_delta_x
 from web3.exceptions import ContractLogicError
-from src.transactions.uni_pool_math.math_v3 import get_liq_sqrtp, swap_t1_in, swap_t0_in
+from src.last_block_tx_simulatore.uni_pool_math.math_v3 import get_liq_sqrtp, swap_t1_in, swap_t0_in
 
-from src.transactions.constant import list_address_router
-from src.transactions.patterns import *
-from src.transactions.web3_instances import w3, abi_pool_get_token, abi_balance_erc20
+from src.last_block_tx_simulatore.constant import list_address_router
+from src.last_block_tx_simulatore.patterns import *
+from src.last_block_tx_simulatore.web3_instances import w3, abi_pool_get_token, abi_balance_erc20
 from typing import TypedDict, Literal, Union
 
 
@@ -86,7 +86,15 @@ def pool_version_identifier(item: str, datum: dict, balance_of: str):
                     arg = AnalyzeArg(type_pool=item_v, token=token_, token0=Web3.to_checksum_address(t0),
                                      token1=Web3.to_checksum_address(t1), blnc_bfr_tk0=b0, blnc_bfr_tk1=b1,
                                      balance=balance, block_num=block_number, item=Web3.to_checksum_address(item))
-                    analyze(data=arg)
+                    new_price, after_tk0, after_tk1 = analyze(data=arg)
+                    dt['balance 0'] = b0
+                    dt['balance 1'] = b1
+                    dt['newPrice'] = new_price
+                    dt['afterToken0'] = after_tk0
+                    dt['afterToken1'] = after_tk1
+                    posts = db.Transactions
+                    tras = posts.insert_one(dt)
+                    print(tras)
     except Exception as e:
         pass
 
@@ -114,7 +122,7 @@ def get_blnc_bfr(tk0, tk1, adr_pl, block_num):
     return blnc_tk0, blnc_tk1
 
 
-def analyze(**kwargs):  #type_pool, token, token0, token1, blnc_bfr_tk0, blnc_bfr_tk1, balance, block_num, item):
+def analyze(**kwargs):  # type_pool, token, token0, token1, blnc_bfr_tk0, blnc_bfr_tk1, balance, block_num, item):
     data = kwargs['data']
     token = data['token']
     token0 = data["token0"]
@@ -126,15 +134,20 @@ def analyze(**kwargs):  #type_pool, token, token0, token1, blnc_bfr_tk0, blnc_bf
     if data['type_pool'] == 'v2':
         if token == token0:
             delta_tk1 = blnc_bfr_tk0 - balance
-            math_delta_y(blnc_bfr_tk0, blnc_bfr_tk1, delta_tk1, balance)
+            new_price, after_tk0, after_tk1 = math_delta_x(blnc_bfr_tk0, blnc_bfr_tk1, delta_tk1, balance)
+            return new_price, after_tk0, after_tk1
         elif token == token1:
             delta_tk0 = blnc_bfr_tk1 - balance
-            math_delta_x(blnc_bfr_tk0, blnc_bfr_tk1, delta_tk0, balance)
+            new_price, after_tk0, after_tk1 = math_delta_y(blnc_bfr_tk0, blnc_bfr_tk1, delta_tk0, balance)
+            return new_price, after_tk0, after_tk1
     elif data["type_pool"] == 'v3':
         sqrtp, liq = get_liq_sqrtp(item, data['block_num'])
         if token == token0:
             amount_in = balance - blnc_bfr_tk0
-            swap_t0_in(liq, sqrtp, amount_in)
+            new_price, after_tk0, after_tk1 = swap_t0_in(liq, sqrtp, amount_in, blnc_bfr_tk0, blnc_bfr_tk1)
+            return new_price, after_tk0, after_tk1
         elif token == token1:
             amount_in = balance - blnc_bfr_tk1
-            swap_t1_in(liq, sqrtp, amount_in)
+            new_price, after_tk0, after_tk1 = swap_t1_in(liq, sqrtp, amount_in, blnc_bfr_tk1, blnc_bfr_tk0)
+            return new_price, after_tk0, after_tk1
+    return None

@@ -1,4 +1,4 @@
-from mongo_handler import get_data_pool_mongo, pool_coloction
+from old.mongo_handler import pool_coloction
 
 
 # {'_id': ObjectId('65c9e248f3edcb7796379409'), 'TYPE POOL': 'v2', 'POOL':

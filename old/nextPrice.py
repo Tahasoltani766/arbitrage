@@ -17,4 +17,5 @@ def analyze():
         elif item['Type Pool'] == 'v3':
             print(item)
 
+
 analyze()

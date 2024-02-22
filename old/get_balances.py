@@ -2,7 +2,7 @@ from mongo_handler import *
 
 
 def get_data_pool_mongo():
-    loaded_data = pool_cooloction.find({})
+    loaded_data = pool_coloction.find({})
     for data in loaded_data:
         yield data
 

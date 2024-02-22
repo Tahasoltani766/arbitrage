@@ -2,7 +2,8 @@ import time
 from web3 import Web3
 from functools import cache
 
-rpc_url = 'https://go.getblock.io/c6deafecae81430da2229597a4effef6'
+# rpc_url = 'https://go.getblock.io/c6deafecae81430da2229597a4effef6'
+rpc_url = 'https://eth-mainnet.g.alchemy.com/v2/N1rPfpXLcgfLjyGiaCEmG9VHP8DeYW74'
 
 
 # def w3_wrapper(func):

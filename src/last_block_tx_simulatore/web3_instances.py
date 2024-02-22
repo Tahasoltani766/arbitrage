@@ -1,7 +1,7 @@
 from web3 import Web3
 
-
-rpc_url = 'https://go.getblock.io/c6deafecae81430da2229597a4effef6'
+rpc_url = 'https://go.getblock.io/9e9154f93e4440968bbfc4c31a1af414'
+# rpc_url = 'https://go.getblock.io/c6deafecae81430da2229597a4effef6'
 # rpc_url = 'https://eth-mainnet.g.alchemy.com/v2/N1rPfpXLcgfLjyGiaCEmG9VHP8DeYW74'
 w3 = Web3(Web3.HTTPProvider(rpc_url))
 # abi2 = """

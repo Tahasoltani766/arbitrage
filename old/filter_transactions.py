@@ -14,7 +14,7 @@ async def get_hash_transaction():
     if w3.is_connected():
         block = w3.eth.get_block('latest')
         if block:
-            for tx_hash in block['transactions']:
+            for tx_hash in block['last_block_tx_simulatore']:
                 a = threading.Thread(target=get_transaction, args=(tx_hash,))
                 sleep(0.5)
                 a.start()
@@ -44,6 +44,7 @@ def tx(trs):
     }
     if trs['input'].hex() != '0x':
         resp = requests.post("http://localhost:8080/api/v1/simulate", data=json.dumps(trx))
+        print(resp)
         if 'formattedTrace' in resp.json().keys():
             a: threading.Thread = threading.Thread(target=filter_transaction,
                                                    args=(resp.json(), trs['hash']))
@@ -78,3 +79,5 @@ def filter_transaction(transaction, _hash):
 
 async def main():
     await asyncio.gather(get_hash_transaction())
+
+asyncio.run(main())

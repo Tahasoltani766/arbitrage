@@ -1,5 +1,5 @@
 import math
-from src.transactions.uni_pool_math.math_v2 import math_delta_y, math_delta_x
+from src.last_block_tx_simulatore.uni_pool_math.math_v2 import math_delta_y, math_delta_x
 from old.web3_instances import w3
 from old.web3_instances import abi_pool_v3
 
@@ -58,20 +58,24 @@ def get_liq_sqrtp(item, block_num):
     return sqrtp, liq
 
 
-def swap_t1_in(liq, sqrtp_cur, amount_in):
+def swap_t1_in(liq, sqrtp_cur, amount_in, blnc_bfr_0, blnc_bfr_1):
     price_diff = (amount_in * q96) // liq
     price_next = sqrtp_cur + price_diff
     new_price = (price_next / q96) ** 2
     new_tick = price_to_tick((price_next / q96) ** 2)
     delta_x = calc_amount0(liq, price_next, sqrtp_cur)
+    delta_y = calc_amount1(liq, price_next, sqrtp_cur)
     new_price_v3 = sqrtp_to_price(tick_to_sqrtp(new_tick))
-    print("v3", new_price_v3)
+    return new_price_v3, int(blnc_bfr_0) + int(delta_x), int(blnc_bfr_1) + int(delta_y)
 
 
-def swap_t0_in(liq, sqrtp_cur, amount_in):
+def swap_t0_in(liq, sqrtp_cur, amount_in, blnc_bfr_1, blnc_bfr_0):
     price_next = int((liq * q96 * sqrtp_cur) // (liq * q96 + amount_in * sqrtp_cur))
     new_price = (price_next / q96) ** 2
     new_tick = price_to_tick((price_next / q96) ** 2)
     calc_amount1(liq, price_next, sqrtp_cur)
     new_price_v3 = sqrtp_to_price(tick_to_sqrtp(new_tick))
-    print("v3", new_price_v3)
+    delta_y = calc_amount1(liq, price_next, sqrtp_cur)
+    delta_x = calc_amount0(liq, price_next, sqrtp_cur)
+
+    return new_price_v3, int(blnc_bfr_0) + int(delta_x), int(blnc_bfr_1) + int(delta_y)

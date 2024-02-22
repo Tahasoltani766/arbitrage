@@ -10,7 +10,7 @@ def math_delta_y(x, y, delta_y, balance):
     # "After tk0": str(int(result)), "newPrice": str(p)
     # 'Balance': 'After tk1'}
     after_tk1 = balance
-    print("v2", new_price)
+    return new_price, after_tk0, after_tk1
 
 
 def math_delta_x(x, y, delta_x, balance):
@@ -20,4 +20,4 @@ def math_delta_x(x, y, delta_x, balance):
     # {"After tk1": str(int(result)), "newPrice": p}}
     # {'Balance': 'After tk0'}
     after_tk0 = balance
-    print("v2", new_price)
+    return new_price, after_tk0, after_tk1

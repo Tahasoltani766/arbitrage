@@ -3,12 +3,9 @@ import re
 from functools import cache
 import multiprocessing as mp
 import requests
-import web3
-from hexbytes import HexBytes
 from src.wrappers import w3 as web3_instance
-from src.transactions.constant import *
-from functools import partial
-from src.transactions.filter_address_pool import get_data
+from src.last_block_tx_simulatore.constant import *
+from src.last_block_tx_simulatore.filter_address_pool import get_data
 from hexbytes import HexBytes
 
 
@@ -28,7 +25,7 @@ def get_hash_txs(w3=web3_instance()):
     if w3.is_connected():
         block = w3.eth.get_block('latest')
         if block:
-            tx_hash_list = block['transactions']
+            tx_hash_list = block['last_block_tx_simulatore']
             pool = mp.Pool(mp.cpu_count() - 2)
             pool.map(get_tx_data, tx_hash_list)
     return tx_hash_list
@@ -42,12 +39,10 @@ def get_tx_data(tx_hash, w3=web3_instance()):
     inp = trx['input']
     resp_post_rust(trx)
     if inp != zero_input_tx:
-        # a: threading.Thread = threading.Thread(target=tx, args=(transaction,))
-        # a.start()
-        # a.join()
+
         tx = [trx['blockNumber'], trx['from'], trx['gas'], trx['hash'], trx['input'], trx['to'],
               trx['value']]
-        # print(tx)
+
 
 
 def get_tx_attr(tx, key):
