@@ -28,7 +28,6 @@ abi_balance_erc20 = """[{
         "stateMutability": "view",
         "type": "function"
     }]"""
-# '{"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}'
 abi_erc20 = """[
 #     {
 #         "constant": true,

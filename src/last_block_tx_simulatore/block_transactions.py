@@ -19,23 +19,23 @@ class HexJsonEncoder(json.JSONEncoder):
 zero_input_tx = HexBytes('0x')
 
 
-def get_hash_txs(w3=web3_instance()):
-    tx_hash_list = []
-    if w3.is_connected():
-        block = w3.eth.get_block('latest')
-        if block:
-            tx_hash_list = block['last_block_tx_simulatore']
-            pool = mp.Pool(mp.cpu_count() - 2)
-            pool.map(get_tx_data, tx_hash_list)
-    return tx_hash_list
-
-
-@cache
-def get_tx_data(tx_hash, w3=web3_instance()):
-    trx = w3.eth.get_transaction(tx_hash)
-    inp = trx['input']
-    if inp != zero_input_tx:
-        resp_post_rust(trx)
+# def get_hash_txs(w3=web3_instance()):
+#     tx_hash_list = []
+#     if w3.is_connected():
+#         block = w3.eth.get_block('latest')
+#         if block:
+#             tx_hash_list = block['last_block_tx_simulatore']
+#             pool = mp.Pool(mp.cpu_count() - 2)
+#             pool.map(get_tx_data, tx_hash_list)
+#     return tx_hash_list
+#
+#
+# @cache
+# def get_tx_data(tx_hash, w3=web3_instance()):
+#     trx = w3.eth.get_transaction(tx_hash)
+#     inp = trx['input']
+#     if inp != zero_input_tx:
+#         resp_post_rust(trx)
 
 
 # def get_tx_attr(tx, key):
@@ -55,19 +55,32 @@ def get_tx_data(tx_hash, w3=web3_instance()):
 #         return tx[6]
 #     return None
 
+def resp_post_rust(trx, bl_num: int | None = None):
+    if not bl_num:
+        tx = {
+            "chainId": 1,
+            "from": str(trx['from']),
+            "to": trx['to'],
+            "data": trx['input'].hex(),
+            "gasLimit": trx['gas'],
+            "value": str(trx['value']),
+            "blockNumber": int(trx['blockNumber']) - 1,
+            "formatTrace": True
+        }
+    else:
+        tx = {
+            "chainId": 1,
+            "from": trx['from'],
+            "to": trx['to'],
+            "data": trx['input'].hex(),
+            "gasLimit": trx['gas'],
+            "value": str(trx['value']),
+            "blockNumber": bl_num,
+            "formatTrace": True
+        }
 
-def resp_post_rust(trx):
-    tx = {
-        "chainId": 1,
-        "from": trx['from'],
-        "to": trx['to'],
-        "data": trx['input'].hex(),
-        "gasLimit": trx['gas'],
-        "value": str(trx['value']),
-        "blockNumber": int(trx['blockNumber']) - 1,
-        "formatTrace": True
-    }
     resp = requests.post("http://localhost:8080/api/v1/simulate", data=json.dumps(tx))
+    print(resp.json())
     if 'formattedTrace' in resp.json().keys():
         filter_transaction(resp.json(), trx["hash"])
 
@@ -100,4 +113,5 @@ def filter_transaction(transaction, _hash):
 
 def main():
     mp.freeze_support()
-    get_hash_txs()
+
+# print(get_hash_txs())

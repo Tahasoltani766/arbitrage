@@ -6,11 +6,10 @@ from web3 import Web3
 from src.last_block_tx_simulatore.uni_pool_math.math_v2 import math_delta_y, math_delta_x
 from web3.exceptions import ContractLogicError
 from src.last_block_tx_simulatore.uni_pool_math.math_v3 import get_liq_sqrtp, swap_t1_in, swap_t0_in
-
 from src.last_block_tx_simulatore.constant import list_address_router
 from src.last_block_tx_simulatore.patterns import *
 from src.last_block_tx_simulatore.web3_instances import w3, abi_pool_get_token, abi_balance_erc20
-from typing import TypedDict, Literal, Union
+from typing import TypedDict, Literal
 
 
 class AnalyzeArg(TypedDict):

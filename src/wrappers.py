@@ -3,8 +3,8 @@ from web3 import Web3
 from functools import cache
 
 # rpc_url = 'https://go.getblock.io/c6deafecae81430da2229597a4effef6'
-rpc_url = 'https://eth-mainnet.g.alchemy.com/v2/N1rPfpXLcgfLjyGiaCEmG9VHP8DeYW74'
-
+# rpc_url = 'https://eth-mainnet.g.alchemy.com/v2/N1rPfpXLcgfLjyGiaCEmG9VHP8DeYW74'
+rpc_url = f"wss://black-restless-brook.quiknode.pro/8e81354a00253b0de72c86b4561b50d5cd212216"
 
 # def w3_wrapper(func):
 #     def wrap(*args, **kwargs):
