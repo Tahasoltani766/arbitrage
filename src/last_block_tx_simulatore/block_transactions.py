@@ -80,7 +80,6 @@ def resp_post_rust(trx, bl_num: int | None = None):
         }
 
     resp = requests.post("http://localhost:8080/api/v1/simulate", data=json.dumps(tx))
-    print(resp.json())
     if 'formattedTrace' in resp.json().keys():
         filter_transaction(resp.json(), trx["hash"])
 

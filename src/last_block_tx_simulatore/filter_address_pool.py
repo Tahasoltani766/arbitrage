@@ -6,10 +6,11 @@ from web3 import Web3
 from src.last_block_tx_simulatore.uni_pool_math.math_v2 import math_delta_y, math_delta_x
 from web3.exceptions import ContractLogicError
 from src.last_block_tx_simulatore.uni_pool_math.math_v3 import get_liq_sqrtp, swap_t1_in, swap_t0_in
-from src.last_block_tx_simulatore.constant import list_address_router
+from src.last_block_tx_simulatore.constant import list_address_router, abi_erc20
 from src.last_block_tx_simulatore.patterns import *
 from src.last_block_tx_simulatore.web3_instances import w3, abi_pool_get_token, abi_balance_erc20
 from typing import TypedDict, Literal
+from src.dexAggrigation.check_adr_tokns import get_tokens
 
 
 class AnalyzeArg(TypedDict):
@@ -81,21 +82,33 @@ def pool_version_identifier(item: str, datum: dict, balance_of: str):
                 }
                 t0, t1 = uni_swap_contract(item)
                 if t0 and t1:
-                    b0, b1 = get_blnc_bfr(t0, t1, item, block_number)
-                    arg = AnalyzeArg(type_pool=item_v, token=token_, token0=Web3.to_checksum_address(t0),
-                                     token1=Web3.to_checksum_address(t1), blnc_bfr_tk0=b0, blnc_bfr_tk1=b1,
-                                     balance=balance, block_num=block_number, item=Web3.to_checksum_address(item))
-                    new_price, after_tk0, after_tk1 = analyze(data=arg)
-                    dt['balance 0'] = b0
-                    dt['balance 1'] = b1
-                    dt['newPrice'] = new_price
-                    dt['afterToken0'] = after_tk0
-                    dt['afterToken1'] = after_tk1
-                    posts = db.Transactions
-                    tras = posts.insert_one(dt)
-                    print(tras)
+                    token_0, token_1 = get_balance_mempool(t0, t1, item)
+                    print("balance token 0 va token 1 in mempool: ", token_0, token_1)
+                    get_tokens(t0, t1)
+                    break
+                    # b0, b1 = get_blnc_bfr(t0, t1, item, block_number)
+                    # arg = AnalyzeArg(type_pool=item_v, token=token_, token0=Web3.to_checksum_address(t0),
+                    #                  token1=Web3.to_checksum_address(t1), blnc_bfr_tk0=b0, blnc_bfr_tk1=b1,
+                    #                  balance=balance, block_num=block_number, item=Web3.to_checksum_address(item))
+                    # new_price, after_tk0, after_tk1 = analyze(data=arg)
+                    # dt['balance 0'] = b0
+                    # dt['balance 1'] = b1
+                    # dt['newPrice'] = new_price
+                    # dt['afterToken0'] = after_tk0
+                    # dt['afterToken1'] = after_tk1
+                    # posts = db.Transactions
+                    # tras = posts.insert_one(dt)
+                    # print(tras)
     except Exception as e:
         pass
+
+
+def get_balance_mempool(tk0, tk1, addr_pl):
+    contract_token0 = w3.eth.contract(address=tk0, abi=abi_erc20)
+    contract_token1 = w3.eth.contract(address=tk1, abi=abi_erc20)
+    blnc_tk0 = contract_token0.functions.balanceOf(addr_pl).call()
+    blnc_tk1 = contract_token1.functions.balanceOf(addr_pl).call()
+    return blnc_tk0, blnc_tk1
 
 
 @cache
