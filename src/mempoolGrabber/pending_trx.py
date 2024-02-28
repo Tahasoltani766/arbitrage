@@ -1,9 +1,14 @@
 import functools
+import queue
 import random
 import multiprocessing as mp
+import threading
+
 from hexbytes import HexBytes
 from web3.exceptions import TransactionNotFound
 from multiprocessing import Queue, Process
+
+from src.last_block_tx_simulatore.block_transactions import filter_transaction
 from src.mempoolGrabber.resp_post import resp_post_rust
 from src.mempoolGrabber.web3_instances import node_getblock
 import time
@@ -58,6 +63,36 @@ async def get_trx_by_hash(hash_trx, tx_data_queue):
         return None
 
 
+q = queue.Queue()
+
+
+def worker(data, blc_num):
+    while True:
+        thread = RespPostRust(data, blc_num)
+        thread.start()
+        thread.join()
+        resp = thread.resp
+        hash = thread.hash
+        return hash, resp
+
+
+
+q.join()
+
+
+class RespPostRust(Thread):
+    def __init__(self, data, blck_num):
+        super().__init__()
+        self.hash = None
+        self.resp = None
+        self.data = data
+        self.blck_unm = blck_num
+
+
+    def run(self):
+        self.resp, self.hash = resp_post_rust(self.data, self.blck_unm)
+
+
 def printer(tx_data_queue, block_number_queue: Queue):
     blc_num = block_number_queue.get()
     while True:
@@ -66,7 +101,18 @@ def printer(tx_data_queue, block_number_queue: Queue):
         data = tx_data_queue.get()
         inp = data['input']
         if inp != zero_input_tx:
-            Thread(target=resp_post_rust, args=(data, blc_num)).start()
+            # thread = RespPostRust(data, blc_num)
+            # thread.start()
+            # thread.join()
+            # resp = thread.resp
+            # hash = thread.hash
+            hash, resp = threading.Thread(target=worker,args=).start()
+            print(resp, hash)
+            if hash and resp:
+                filter_transaction(resp, hash)
+            # resp, hash = Thread(target=resp_post_rust, args=(data, blc_num)).start()
+            # print(resp, hash)
+
 
 
 def start_pending_transactions(new_pending_queue, block_number_queue):

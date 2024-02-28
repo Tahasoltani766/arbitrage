@@ -1,5 +1,5 @@
 from web3 import Web3
-from constant import *
+from src.dexAggrigation.constant import *
 
 rpc_url = 'https://go.getblock.io/9e9154f93e4440968bbfc4c31a1af414'
 w3 = Web3(Web3.HTTPProvider(rpc_url))
@@ -12,26 +12,22 @@ dexs = [{'dex': 'sushi_swap', "factory addr": adr_sushi_factory, "abi": abi_sush
          "fee": True}
         ]
 
-
-def get_dexs(dex: dict, tk0, tk1):
-    list_percent = [100, 500, 1000, 3000, 10000]
-    contract = w3.eth.contract(address=Web3.to_checksum_address(dex['factory addr']), abi=dex['abi'])
-    if dex['fee'] == True:
-        for fee in list_percent:
-            get_pair = contract.functions.getPool(tk0, tk1, fee).call()
-            return tk0, tk1, get_pair
-    elif dex['fee'] == False:
-        get_pair = contract.functions.dex['function pool'](tk0, tk1).call()
-        return tk0, tk1, get_pair
+token1 = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
+token0 = Web3.to_checksum_address("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
 
 
-
-
-def pair(adr_factory, abi, func, tk0, tk1):
-    contract = w3.eth.contract(address=Web3.to_checksum_address(adr_factory), abi=abi)
-    if func == "pools":
-        get_pair = contract.functions.pools(tk0, tk1).call()
-        return tk0, tk1, get_pair
-    elif func == "getPair":
-        get_pair = contract.functions.getPair(tk0, tk1).call()
-        return tk0, tk1, get_pair
+# def get_dexs(tk0, tk1, dex: dict):
+#     list_percent = [100, 500, 1000, 3000, 10000]
+#     contract = w3.eth.contract(address=Web3.to_checksum_address((dex['factory addr'])), abi=dex['abi'])
+#     if "fee" in dex.keys():
+#         for fee in list_percent:
+#             get_pair = contract.functions.getPool(tk0, tk1, fee).call()
+#             return tk0, tk1, get_pair
+#     else:
+#         print(type(dex['function pool']))
+#         # noinspection PyCallingNonCallable
+#         get_pair = contract.functions[dex['function pool']](tk0, tk1).call()
+#         return tk0, tk1, get_pair
+#
+#
+# get_dexs(token0, token1, dexs[0])

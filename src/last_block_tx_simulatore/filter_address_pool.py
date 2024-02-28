@@ -85,19 +85,19 @@ def pool_version_identifier(item: str, datum: dict, balance_of: str):
                     token_0, token_1 = get_balance_mempool(t0, t1, item)
                     print("balance token 0 va token 1 in mempool: ", token_0, token_1)
                     pair_handler(t0, t1)
-                    b0, b1 = get_blnc_bfr(t0, t1, item, block_number)
-                    arg = AnalyzeArg(type_pool=item_v, token=token_, token0=Web3.to_checksum_address(t0),
-                                     token1=Web3.to_checksum_address(t1), blnc_bfr_tk0=b0, blnc_bfr_tk1=b1,
-                                     balance=balance, block_num=block_number, item=Web3.to_checksum_address(item))
-                    new_price, after_tk0, after_tk1 = analyze(data=arg)
-                    dt['balance 0'] = b0
-                    dt['balance 1'] = b1
-                    dt['newPrice'] = new_price
-                    dt['afterToken0'] = after_tk0
-                    dt['afterToken1'] = after_tk1
-                    posts = db.Transactions
-                    tras = posts.insert_one(dt)
-                    print(tras)
+                    # b0, b1 = get_blnc_bfr(t0, t1, item, block_number)
+                    # arg = AnalyzeArg(type_pool=item_v, token=token_, token0=Web3.to_checksum_address(t0),
+                    #                  token1=Web3.to_checksum_address(t1), blnc_bfr_tk0=b0, blnc_bfr_tk1=b1,
+                    #                  balance=balance, block_num=block_number, item=Web3.to_checksum_address(item))
+                    # new_price, after_tk0, after_tk1 = analyze(data=arg)
+                    # dt['balance 0'] = b0
+                    # dt['balance 1'] = b1
+                    # dt['newPrice'] = new_price
+                    # dt['afterToken0'] = after_tk0
+                    # dt['afterToken1'] = after_tk1
+                    # posts = db.Transactions
+                    # tras = posts.insert_one(dt)
+                    # print(tras)
     except Exception as e:
         pass
 

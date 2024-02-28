@@ -14,16 +14,19 @@ def oneinch_weth_wrrper(func):
         return res
 
     return wrraper
-def oneinch_weth_unwrrper(func):
-    def wrraper(*args, **kwargs):
-        weth_adrrs = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
-        a = []
-        for addr in args:
-            if addr == "0x0000000000000000000000000000000000000000":
-                a.append(weth_adrrs)
-            else:
-                a.append(addr)
-        res = func(a[0], a[1],a[2], **kwargs)
-        return res
 
-    return wrraper
+
+
+# def oneinch_weth_unwrrper(func):
+#     def wrraper(*args, **kwargs):
+#         weth_adrrs = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
+#         a = []
+#         for addr in args:
+#             if addr == "0x0000000000000000000000000000000000000000":
+#                 a.append(weth_adrrs)
+#             else:
+#                 a.append(addr)
+#         res = func(a[0], a[1],a[2], **kwargs)
+#         return res
+#
+#     return wrraper
