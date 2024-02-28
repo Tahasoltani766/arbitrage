@@ -1,9 +1,10 @@
 import threading
+from web3 import Web3
 from functools import cache, partial
 import multiprocessing as mp
-from src.dexAggrigation.web3_instances import *
+from src.dexAggrigation.web3_instances import w3, pair, dexs, get_dexs
 from src.dexAggrigation.constant import *
-from src.dexAggrigation.wrappers import oneinch_weth_wrrper, oneinch_weth_unwrrper
+from src.dexAggrigation.wrappers import oneinch_weth_wrrper
 import requests
 
 token1 = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
@@ -20,29 +21,28 @@ def worker(func, t0, t1):
     func(t0, t1)
 
 
+def pair_handler(tk0, tk1):
+    for dex in dexs:
+        get_dexs(dex, tk0, tk1)
+
+
 @cache
 def sushi_swap(tk0, tk1):
-    contract = w3.eth.contract(address=Web3.to_checksum_address(adr_sushi_factory), abi=abi_sushiswap)
-    get_pair = contract.functions.getPair(tk0, tk1).call()
-    print("sushi")
-    get_balanceof_pool(tk0, tk1, get_pair)
+    t0, t1, get_pair = pair(adr_sushi_factory, abi_sushiswap, 'getPair', tk0, tk1)
+    get_balanceof_pool(t0, t1, get_pair)
 
 
 @oneinch_weth_wrrper
 @cache
 def one_inch(tk0, tk1):
-    contract = w3.eth.contract(address=Web3.to_checksum_address(adr_oneinch_factory), abi=abi_oneinch)
-    get_pair = contract.functions.pools(tk0, tk1).call()
-    print("1inch")
-    get_balanceof_pool(tk0, tk1, get_pair)
+    t0, t1, get_pair = pair(adr_oneinch_factory, abi_oneinch, 'pools', tk0, tk1)
+    get_balanceof_pool(t0, t1, get_pair)
 
 
 @cache
 def uni_v2(tk0, tk1):
-    contract = w3.eth.contract(address=Web3.to_checksum_address(adr_univ2_factory), abi=abi_univ2)
-    get_pair = contract.functions.getPair(tk0, tk1).call()
-    print("v2")
-    get_balanceof_pool(tk0, tk1, get_pair)
+    t0, t1, get_pair = pair(adr_univ2_factory, abi_univ2, 'getPair', tk0, tk1)
+    get_balanceof_pool(t0, t1, get_pair)
 
 
 # GET BALANCE OF POOLS

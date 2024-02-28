@@ -29,7 +29,6 @@ async def ws_v2_subscription_example(new_pending_queue, block_number_queue):
                 block_number_queue.put(int(blc_num, 16))
 
 
-
 async def idk(hash_trx, tx_data_queue):
     async with AsyncWeb3.persistent_websocket(
             WebsocketProviderV2(node_getblock)
