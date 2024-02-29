@@ -2,8 +2,6 @@ import random
 import threading
 import time
 from multiprocessing import Process, Queue
-
-
 def a(num, q: Queue):
     while 1:
         for item in range(num):
@@ -33,9 +31,6 @@ def worker(q: Queue):
         print(f'Working on {item}')
         t = RespPostRust(item)
         t.start()
-        # time.sleep(10)
-
-        # q.task_done()
 
 
 if __name__ == '__main__':
@@ -43,7 +38,7 @@ if __name__ == '__main__':
     p1 = Process(target=th_worker, args=(q,))
     p1.start()
 
-    p = Process(target=a, args=(23, q))
+    p = Process(target=a, args=(5, q))
     p.start()
     # p.join()
     # p1.join()

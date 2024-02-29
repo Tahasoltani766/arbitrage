@@ -39,11 +39,13 @@ def get_data(loaded_data: list):
         find_balanceof = re.findall(pattern_balanceof, result_formatrace, flags=re.MULTILINE)
         for balance_of in find_balanceof:
             find_address = re.findall(pattern_address, balance_of, flags=re.MULTILINE)
-            try:
-                dt_ = pool_version_identifier(find_address[1], datum, balance_of)
-                dt_list.append(dt_)
-            except:
-                pass
+            dt_list.append([find_address[1], datum, balance_of])
+    return dt_list
+    # try:
+    # pool_version_identifier(find_address[1], datum, balance_of) # dt_ =
+    # dt_list.append(dt_)
+    # except:
+    #     pass
 
 
 def pool_version_identifier(item: str, datum: dict, balance_of: str):
@@ -67,6 +69,7 @@ def pool_version_identifier(item: str, datum: dict, balance_of: str):
 
         elif "0x1F98431c8aD98523631AE4a59f267346ea31F984" == factory:
             item_v = 'v3'
+            #todo az inja be baed ro bebar dakhele yek def jadid ke kamtar be web3 feshar biyad
         for name, address in zip(["uniswap", "zerox", "oneinch", "sushiswap", "universal_router",
                                   "swap_router02"],
                                  list_address_router):

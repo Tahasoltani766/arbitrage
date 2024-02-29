@@ -29,7 +29,6 @@ def pair_handler(tk0, tk1):
 
 
 def get_dex(tk0, tk1, dex: dict):
-    print("lllllll")
     list_percent = [100, 500, 1000, 3000, 10000]
     print('resid be get dex')
     contract = w3.eth.contract(address=Web3.to_checksum_address((dex['factory addr'])), abi=dex['abi'])

@@ -82,7 +82,7 @@ def resp_post_rust(trx, bl_num: int | None = None):
     resp = requests.post("http://localhost:8080/api/v1/simulate", data=json.dumps(tx))
     if 'formattedTrace' in resp.json().keys():
         return resp.json(), trx['hash']
-    return None,None
+    return None, None
 
 
 def filter_transaction(transaction, _hash):
@@ -106,7 +106,8 @@ def filter_transaction(transaction, _hash):
                         n = False
                 if not n:
                     break
-            get_data(list_data)
+            dt_list = get_data(list_data)
+
     except Exception as e:
         pass
 

@@ -63,21 +63,24 @@ async def get_trx_by_hash(hash_trx, tx_data_queue):
         return None
 
 
-q = queue.Queue()
-
-
-def worker(data, blc_num):
+def worker(thread, resp_hash: Queue):
+    thread.start()
+    thread.join()
+    resp = thread.resp
+    hash = thread.hash
+    # print(resp, hash)
+    resp_hash.put(resp, hash)
+def resp_handler(resp_hash: Queue):
     while True:
-        thread = RespPostRust(data, blc_num)
-        thread.start()
-        thread.join()
-        resp = thread.resp
-        hash = thread.hash
-        return hash, resp
-
-
-
-q.join()
+        resp, hash = resp_hash.get()
+        l_data = filter_transaction(resp,hash)
+        print(l_data)
+def th_worker(data_blcnum: Queue, resp_hash: Queue):
+    while 1:
+        data, blck_num = data_blcnum.get()
+        thread = RespPostRust(data, blck_num)
+        th = threading.Thread(target=worker, args=(thread, resp_hash), daemon=True)
+        th.start()
 
 
 class RespPostRust(Thread):
@@ -88,12 +91,11 @@ class RespPostRust(Thread):
         self.data = data
         self.blck_unm = blck_num
 
-
     def run(self):
         self.resp, self.hash = resp_post_rust(self.data, self.blck_unm)
 
 
-def printer(tx_data_queue, block_number_queue: Queue):
+def printer(tx_data_queue, block_number_queue: Queue, data_blcnum: Queue, resp_hash: Queue):
     blc_num = block_number_queue.get()
     while True:
         if not block_number_queue.empty():
@@ -101,18 +103,18 @@ def printer(tx_data_queue, block_number_queue: Queue):
         data = tx_data_queue.get()
         inp = data['input']
         if inp != zero_input_tx:
+            data_blcnum.put((data, blc_num))
             # thread = RespPostRust(data, blc_num)
             # thread.start()
             # thread.join()
             # resp = thread.resp
             # hash = thread.hash
-            hash, resp = threading.Thread(target=worker,args=).start()
-            print(resp, hash)
-            if hash and resp:
-                filter_transaction(resp, hash)
+            # resp, hash = resp_hash.get()
+            # print(resp, hash)
+            # if hash and resp:
+            #     filter_transaction(resp, hash)
             # resp, hash = Thread(target=resp_post_rust, args=(data, blc_num)).start()
             # print(resp, hash)
-
 
 
 def start_pending_transactions(new_pending_queue, block_number_queue):
@@ -135,15 +137,20 @@ def main_pend_trx():
     new_pending_queue = Queue()
     tx_data_queue = Queue()
     block_number_queue = Queue()
+    data_blcnum = Queue()
+    resp_hash = Queue()
 
     p1 = Process(target=start_pending_transactions, args=(new_pending_queue, block_number_queue))
-    p2 = Process(target=printer, args=(tx_data_queue, block_number_queue))
+    p2 = Process(target=printer, args=(tx_data_queue, block_number_queue, data_blcnum, resp_hash))
     p3 = Process(target=start_get_tx, args=(new_pending_queue, tx_data_queue))
+    p4 = Process(target=th_worker, args=(data_blcnum, resp_hash))
 
+    p4.start()
     p1.start()
     p2.start()
     p3.start()
 
+    p4.join()
     p1.join()
     p2.join()
     p3.join()
