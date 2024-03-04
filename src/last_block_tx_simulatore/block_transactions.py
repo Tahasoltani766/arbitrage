@@ -110,7 +110,6 @@ def filter_transaction(transaction, _hash):
                     break
             pool = mp.Pool(processes=2)
             pool.map(get_data, list_data)
-            # dt_list = get_data(list_data)
 
     except Exception as e:
         pass
