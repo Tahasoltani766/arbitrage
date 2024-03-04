@@ -57,7 +57,6 @@ def idk_starter(hash_trx, tx_data_queue):
 
 async def get_trx_by_hash(hash_trx, tx_data_queue):
     try:
-
         Thread(target=idk_starter, args=(hash_trx, tx_data_queue)).start()
     except TransactionNotFound:
         return None
@@ -68,13 +67,15 @@ def worker(thread, resp_hash: Queue):
     thread.join()
     resp = thread.resp
     hash = thread.hash
-    # print(resp, hash)
     resp_hash.put(resp, hash)
+
+
 def resp_handler(resp_hash: Queue):
     while True:
         resp, hash = resp_hash.get()
-        l_data = filter_transaction(resp,hash)
-        print(l_data)
+        filter_transaction(resp, hash)
+
+
 def th_worker(data_blcnum: Queue, resp_hash: Queue):
     while 1:
         data, blck_num = data_blcnum.get()
@@ -104,17 +105,7 @@ def printer(tx_data_queue, block_number_queue: Queue, data_blcnum: Queue, resp_h
         inp = data['input']
         if inp != zero_input_tx:
             data_blcnum.put((data, blc_num))
-            # thread = RespPostRust(data, blc_num)
-            # thread.start()
-            # thread.join()
-            # resp = thread.resp
-            # hash = thread.hash
-            # resp, hash = resp_hash.get()
-            # print(resp, hash)
-            # if hash and resp:
-            #     filter_transaction(resp, hash)
-            # resp, hash = Thread(target=resp_post_rust, args=(data, blc_num)).start()
-            # print(resp, hash)
+            print(blc_num)
 
 
 def start_pending_transactions(new_pending_queue, block_number_queue):
