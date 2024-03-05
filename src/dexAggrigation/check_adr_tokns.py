@@ -4,7 +4,6 @@ from functools import cache, partial
 import multiprocessing as mp
 from src.dexAggrigation.web3_instances import w3, dexs
 from src.dexAggrigation.constant import *
-from src.dexAggrigation.wrappers import oneinch_weth_wrrper
 import requests
 
 token1 = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
@@ -27,7 +26,6 @@ def pair_handler(tk0, tk1):
     pool = mp.Pool(len(dexs))
     pool.map(partial(get_dex, tk0=tk0, tk1=tk1), dexs)
 
-
 def get_dex(tk0, tk1, dex: dict):
     list_percent = [100, 500, 1000, 3000, 10000]
     print('resid be get dex')
@@ -41,7 +39,6 @@ def get_dex(tk0, tk1, dex: dict):
         get_pair = contract.functions[dex['function pool']](tk0, tk1).call()
         print("get pair:", get_pair)
         # return tk0, tk1, get_pair
-
 
 # @cache
 # def sushi_swap(tk0, tk1):
