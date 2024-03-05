@@ -70,11 +70,15 @@ def worker(thread, resp_hash: Queue):
     hash = thread.hash
     # print(resp, hash)
     resp_hash.put(resp, hash)
+
+
 def resp_handler(resp_hash: Queue):
     while True:
         resp, hash = resp_hash.get()
-        l_data = filter_transaction(resp,hash)
+        l_data = filter_transaction(resp, hash)
         print(l_data)
+
+
 def th_worker(data_blcnum: Queue, resp_hash: Queue):
     while 1:
         data, blck_num = data_blcnum.get()

@@ -106,6 +106,8 @@ def filter_transaction(transaction, _hash):
                         n = False
                 if not n:
                     break
+            pool = mp.Pool(processes=mp.cpu_count() - 2)
+            
             dt_list = get_data(list_data)
 
     except Exception as e:
