@@ -1,4 +1,4 @@
-from src.dexAggrigation.web3_instances import *
+from src.dex_aggrigation.web3_instances import *
 
 
 def oneinch_weth_wrrper(func):

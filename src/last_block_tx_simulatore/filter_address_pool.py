@@ -10,7 +10,7 @@ from src.last_block_tx_simulatore.constant import list_address_router, abi_erc20
 from src.last_block_tx_simulatore.patterns import *
 from src.last_block_tx_simulatore.web3_instances import w3, abi_pool_get_token, abi_balance_erc20
 from typing import TypedDict, Literal
-from src.dexAggrigation.check_adr_tokns import pair_handler
+from src.dex_aggrigation.check_adr_tokns import pair_handler
 
 
 class AnalyzeArg(TypedDict):

@@ -2,8 +2,8 @@ import threading
 from web3 import Web3
 from functools import cache, partial
 import multiprocessing as mp
-from src.dexAggrigation.web3_instances import w3, dexs
-from src.dexAggrigation.constant import *
+from src.dex_aggrigation.web3_instances import w3, dexs
+from src.dex_aggrigation.constant import *
 import requests
 
 token1 = Web3.to_checksum_address("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")

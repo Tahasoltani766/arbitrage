@@ -1,5 +1,5 @@
 from web3 import Web3
-from src.dexAggrigation.constant import *
+from src.dex_aggrigation.constant import *
 
 rpc_url = 'https://go.getblock.io/9e9154f93e4440968bbfc4c31a1af414'
 w3 = Web3(Web3.HTTPProvider(rpc_url))
