@@ -13,6 +13,9 @@ priv_key = "0x5c9c7029dab6e679a3ab00fa683bf1f0b9e34940e48f521919c194937ade4c36"
 account: LocalAccount = Account.from_key(priv_key)
 w3.middleware_onion.add(construct_sign_and_send_raw_middleware(account))
 
+privet_key_signuter = "0x5c9c77777777777777777778683bf1f0b9e3494096421ab63fc194937ade4c36"
+signer: LocalAccount = Account.from_key(priv_key)
+
 
 class MetaWETH(object):
     address_withdrawal: web3.types.ChecksumAddress = "0x"
@@ -65,8 +68,18 @@ class MetaWETH(object):
         }
         print(trx)
 
-
-MetaWETH.transact("0x", False)
+    def flash_bots(self, trx):
+        trx_signature = signer.sign_transaction(trx)
+        bundle = [
+            {"signed_transaction": trx_signature.rawTransaction},
+            {"signer": signer, "transaction": trx},
+        ]
+        while True:
+            block = w3.eth.block_number
+            try:
+                w3.flashbots.simulate(bundle, block)
+            except Exception as e:
+                return None
 
 
 class StETH(MetaWETH):

@@ -18,13 +18,3 @@ import requests
 #                              {"confidence": 90, "price": 25, "maxPriorityFeePerGas": 0.09, "maxFeePerGas": 31.66},
 #                              {"confidence": 80, "price": 25, "maxPriorityFeePerGas": 0.08, "maxFeePerGas": 31.65},
 #                              {"confidence": 70, "price": 25, "maxPriorityFeePerGas": 0.07, "maxFeePerGas": 31.64}]}]}
-
-res = requests.get('https://api.blocknative.com/gasprices/blockprices')
-response = res.json()
-a = response["blockPrices"][0]["estimatedPrices"][4]
-if a and a['confidence'] == 70:
-    max_priority_gas = a['maxPriorityFeePerGas']
-    max_per_gas = a['maxFeePerGas']
-    print(max_priority_gas, max_per_gas)
-else:
-    print(None)
