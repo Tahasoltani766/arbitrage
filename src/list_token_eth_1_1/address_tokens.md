@@ -2,12 +2,15 @@
 > **address :** 0xae7ab96520de3a18e5e111b5eaab095312d7fe84
 ```bash 
 deposit : deposit(uint256 _maxDepositsCount, uint256 _stakingModuleId, bytes _depositCalldata) external {ILidoLocator locator = getLidoLocator()
+burn : withdrawWithdrawals(uint256 _amount) external 
 ```
+
  ###  Rocket Pool ETH 
 > **address :** 0xae78736cd615f374d3085123a210448e74fc6393
 ```bash
 burn : (uint256 _rethAmount) override external
 deposit : deposit() override external payable onlyThisLatestContract
+mint: mint(uint256 _ethAmount,address address_to) override external onlyLatestContract
 ```
 
  ###  Mantle Staked Ether 
@@ -44,7 +47,8 @@ burn : burn => burn(address account, uint256 amount) external
 > **address :** 0xa2E3356610840701BDf5611a53974510Ae27E2e1
 ```bash 
 burn : function requestWithdrawEth(uint256 wbethAmount) external
-mint : function deposit(address referral) external payable
+mint : function mint(address _to, uint256 _amount)
+
 ```
 ### sETH2
 > **address :** 0xFe2e637202056d30016725477c5da089Ab0A043A
