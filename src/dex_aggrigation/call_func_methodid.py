@@ -13,10 +13,6 @@ account: LocalAccount = Account.from_key(priv_key)
 w3.middleware_onion.add(construct_sign_and_send_raw_middleware(account))
 
 
-# contract = w3.eth.contract(address=W3.to_checksum_address("0x"))
-# identity_func = contract.get_function_by_signature('identity(uint256,bool)')
-# identity_func(1, True).call()
-
 class MetaWETH(object):
     def __init__(self, _address, _sig_mint, _burn):
         self.address = _address
@@ -33,7 +29,7 @@ class MetaWETH(object):
         trx = {
             'from': account.address,
             'to': self.address,
-            'nonce': self.nonce(),
+            'nonce': self.nonce,
             'value': None,
             'input': tx_input,
             'gas': 100000,
@@ -50,40 +46,43 @@ class MetaWETH(object):
 
 class StETH(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xae7ab96520de3a18e5e111b5eaab095312d7fe84"), "aa0b7db7", ":3194528a")
+        super().__init__(w3.to_checksum_address("0xae7ab96520de3a18e5e111b5eaab095312d7fe84"), "0xaa0b7db7",
+                         ":3194528a")
         self.address_withdrawal = w3.to_checksum_address("0xB9D7934878B5FB9610B3fE8A5e441e8fad7E293f")
         self.contract_withdrawal = w3.eth.contract(address=self.address_withdrawal)
 
     def mint(self, maxDepositsCount: int, stakingModuleId: int, depositCalldata: bytes):
         tx_input = "0xaa0b7db7" + (
-            encode(['uint256', 'uint256', 'bytes'], [maxDepositsCount, stakingModuleId, depositCalldata])).hex()
+            encode(['(uint256,uint256,bytes)'], [maxDepositsCount, stakingModuleId, depositCalldata])).hex()
         super().transact(tx_input)
 
-    def burn(self, *args, **kwargs):
-        burn_func = self.contract_withdrawal.get_function_by_identifier("3194528a")
-        burn_func(*args[0]).call()
+    def burn(self, amount):
+        pass
+        # tx_input = "0x3194528a" + (encode(['uint256'], [amount])).hex()
+        # burn_func = self.contract_withdrawal.get_function_by_identifier("3194528a")
+        # burn_func(*args[0]).call()
 
 
 class RocketETH(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xae78736cd615f374d3085123a210448e74fc6393"), "0x49123dc2",
+        super().__init__(w3.to_checksum_address("0xae78736cd615f374d3085123a210448e74fc6393"), "0x94bf804d",
                          "0x42966c68")
 
-    def mint(self, _ethAmount: int, address_to: str):
-        tx_input = "0x49123dc2" + (encode(['(uint256,address)'], [(_ethAmount, address_to)])).hex()
+    def mint(self, _ethAmount: int, address_to: type.ChecksumAddress):
+        tx_input = "0x94bf804d" + (encode(['(uint256,address)'], [(_ethAmount, address_to)])).hex()
         super().transact(tx_input)
 
-    def burn(self, reth_amount):
+    def burn(self, reth_amount: int):
         tx_input = "0x42966c68" + (encode(['uint256'], [reth_amount])).hex()
         super().transact(tx_input)
 
 
 class MantleStakedEther(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa"), "49123dc2", "42966c68")
+        super().__init__(w3.to_checksum_address("0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa"), "0x40c10f19", "0x42966c68")
 
-    def mint(self, staker: str, amount: int):
-        tx_input = "0x49123dc2" + (encode(['(address,uint256)'], [(staker, amount)])).hex()
+    def mint(self, staker: type.ChecksumAddress, amount: int):
+        tx_input = "0x40c10f19" + (encode(['(address,uint256)'], [(staker, amount)])).hex()
         super().transact(tx_input)
 
     def burn(self, amount: int):
@@ -93,10 +92,10 @@ class MantleStakedEther(MetaWETH):
 
 class FraxETH(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0x5e8422345238f34275888049021821e8e08caa1f"), "49123dc2", "42966c68")
+        super().__init__(w3.to_checksum_address("0x5e8422345238f34275888049021821e8e08caa1f"), "0x6a257ebc", "0x42966c68")
 
-    def mint(self, m_address: str, m_amount: int):
-        tx_input = "0x49123dc2" + (encode(['(address,uint256)'], [(m_address, m_amount)])).hex()
+    def mint(self, m_address: type.ChecksumAddress, m_amount: int):
+        tx_input = "0x6a257ebc" + (encode(['(address,uint256)'], [(m_address, m_amount)])).hex()
         super().transact(tx_input)
 
     def burn(self, amount: int):
@@ -106,14 +105,14 @@ class FraxETH(MetaWETH):
 
 class StakedFraxEther(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xac3e018457b222d93114458476f3e3416abbe38f"), "6e553f65", "b460af94")
+        super().__init__(w3.to_checksum_address("0xac3e018457b222d93114458476f3e3416abbe38f"), "0x6e553f65", "0xb460af94")
 
-    def mint(self, assets: int, receiver: str):
+    def mint(self, assets: int, receiver: type.ChecksumAddress):
         tx_input = "0x6e553f65" + (encode(['(uint256,address)'], [(assets, receiver)])).hex()
         super().transact(tx_input)
 
     def burn(self, assets: int, receiver: type.ChecksumAddress, owner: type.ChecksumAddress):
-        tx_input = "0x6e553f65" + (encode(['(uint256,address,address)'], [(assets, receiver, owner)])).hex()
+        tx_input = "0xb460af94" + (encode(['(uint256,address,address)'], [(assets, receiver, owner)])).hex()
         super().transact(tx_input)
 
 
@@ -126,45 +125,45 @@ class CoinbaseWrappedStakedETH(MetaWETH):
         tx_input = "0x40c10f19" + (encode(['(address,uint256)'], [(_to, _amount)])).hex()
         super().transact(tx_input)
 
-    def burn(self, _amount: float):
+    def burn(self, _amount: int):
         tx_input = "0x42966c68" + (encode(['(uint256)'], [(_amount)])).hex()
         super().transact(tx_input)
 
 
 class AnkrStakedETH(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xe95a203b1a91a908f9b9ce46459d101078c2c3cb"), "49123dc2", "9dc29fac")
+        super().__init__(w3.to_checksum_address("0xe95a203b1a91a908f9b9ce46459d101078c2c3cb"), "0x40c10f19", "0x9dc29fac")
 
-    def mint(self, account: str, amount: int):
-        tx_input = "0x49123dc2" + (encode(['(address,uint256)'], [(account, amount)])).hex()
+    def mint(self, account: type.ChecksumAddress, amount: int):
+        tx_input = "0x40c10f19" + (encode(['(address,uint256)'], [(account, amount)])).hex()
         super().transact(tx_input)
 
-    def burn(self, account: str, amount: int):
+    def burn(self, account: type.ChecksumAddress, amount: int):
         tx_input = "0x9dc29fac" + (encode(['(address,uint256)'], [(account, amount)])).hex()
         super().transact(tx_input)
 
 
 class WrappedBeaconETH(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xa2E3356610840701BDf5611a53974510Ae27E2e1"), "49123dc2", "42966c68")
+        super().__init__(w3.to_checksum_address("0xa2E3356610840701BDf5611a53974510Ae27E2e1"), "0x40c10f19", "0xa0907283")
 
-    def mint(self, _to: str, _amount: int):
-        tx_input = "0x49123dc2" + (encode(['(address,uint256)'], [(account, _amount)])).hex()
+    def mint(self, _to: type.ChecksumAddress, _amount: int):
+        tx_input = "0x40c10f19" + (encode(['(address,uint256)'], [(account, _amount)])).hex()
         super().transact(tx_input)
 
     def burn(self, wbethAmount: int):
-        tx_input = "0x42966c68" + (encode(['(uint256)'], [(wbethAmount)])).hex()
+        tx_input = "0xa0907283" + (encode(['(uint256)'], [(wbethAmount)])).hex()
         super().transact(tx_input)
 
 
 class sETH2(MetaWETH):
     def __init__(self):
-        super().__init__(w3.to_checksum_address("0xFe2e637202056d30016725477c5da089Ab0A043A"), "a0712d68", "9dc29fac")
+        super().__init__(w3.to_checksum_address("0xFe2e637202056d30016725477c5da089Ab0A043A"), "0xa0712d68", "0x9dc29fac")
 
     def mint(self, amount: int):
         tx_input = "0xa0712d68" + (encode(['(uint256)'], [(amount)])).hex()
         super().transact(tx_input)
 
-    def burn(self, account: str, amount: float):
+    def burn(self, account: type.ChecksumAddress, amount: float):
         tx_input = "0x9dc29fac" + (encode(['(address,uint256)'], [(account, amount)])).hex()
         super().transact(tx_input)

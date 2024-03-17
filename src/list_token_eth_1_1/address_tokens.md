@@ -9,7 +9,6 @@ burn : withdrawWithdrawals(uint256 _amount) external
 > **address :** 0xae78736cd615f374d3085123a210448e74fc6393
 ```bash
 burn : (uint256 _rethAmount) override external
-deposit : deposit() override external payable onlyThisLatestContract
 mint: mint(uint256 _ethAmount,address address_to) override external onlyLatestContract
 ```
 
