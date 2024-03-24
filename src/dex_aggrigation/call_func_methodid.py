@@ -6,6 +6,9 @@ from eth_account.signers.local import LocalAccount
 from web3 import Web3
 from web3.middleware import construct_sign_and_send_raw_middleware
 from eth_abi import encode
+from flashbots import flashbots
+
+
 
 w3 = Web3(Web3.HTTPProvider('https://go.getblock.io/047b88b3a0804ed9a12b02214022ebd6'))
 # w3 = Web3(Web3.HTTPProvider("https://go.getblock.io/9e9154f93e4440968bbfc4c31a1af414"))
@@ -76,19 +79,18 @@ class MetaWETH(object):
         tx = w3.eth.get_transaction(trx)
         return tx
 
-# TODO send trx on flashbots :
-    # def flash_bots(self, trx):
-    #     trx_signature = signer.sign_transaction(trx)
-    #     bundle = [
-    #         {"signed_transaction": trx_signature.rawTransaction},
-    #         {"signer": signer, "transaction": trx},
-    #     ]
-    #     while True:
-    #         block = w3.eth.block_number
-    #         try:
-    #             w3.flashbots.simulate(bundle, block)
-    #         except Exception as e:
-    #             return None
+    def flash_bots(self, trx):
+        trx_signature = signer.sign_transaction(trx)
+        bundle = [
+            {"signed_transaction": trx_signature.rawTransaction},
+            {"signer": signer, "transaction": trx},
+        ]
+        while True:
+            block = w3.eth.block_number
+            try:
+                w3.flashbots.simulate(bundle, block)
+            except Exception as e:
+                return None
 
 
 class StETH(MetaWETH):
